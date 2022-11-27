@@ -2,7 +2,7 @@ import datetime
 import sys
 import io
 import folium
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets, QtWebEngineWidgets
 from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout, QVBoxLayout
 from PyQt5.QtWebEngineWidgets import QWebEngineView
@@ -75,6 +75,23 @@ class Ui_MainWindow(object):
         self.timer = QTimer()
         self.telemetry_timer = QTimer()
 
+#######
+        self.view = QtWebEngineWidgets.QWebEngineView()
+        self.view.setContentsMargins(300, 50, 50, 50)
+        self.menubar.setGeometry(QtCore.QRect(300, 30, 800, 400))
+
+        lay = QtWidgets.QHBoxLayout(self.centralwidget)
+        lay.addWidget(self.view, stretch=1)
+
+        m = folium.Map(
+            location=[39, 40], tiles="Stamen Toner", zoom_start=13
+        )
+
+        data = io.BytesIO()
+        m.save(data, close_file=False)
+        self.view.setHtml(data.getvalue().decode())
+
+        #########
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
