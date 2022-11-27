@@ -12,6 +12,7 @@ class Ui_MainWindow(object):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1200, 750)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
+        MainWindow.setCentralWidget(self.centralwidget)
         self.centralwidget.setObjectName("centralwidget")
         self.groupBox = QtWidgets.QGroupBox(self.centralwidget)
         self.groupBox.setGeometry(QtCore.QRect(20, 160, 231, 241))
@@ -63,7 +64,7 @@ class Ui_MainWindow(object):
         self.pushButton_2.setObjectName("pushButton_2")
         self.pushButton_2.clicked.connect(self.stop)
 
-        MainWindow.setCentralWidget(self.centralwidget)
+
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1200, 21))
         self.menubar.setObjectName("menubar")
@@ -78,18 +79,20 @@ class Ui_MainWindow(object):
 #######
         self.view = QtWebEngineWidgets.QWebEngineView()
         self.view.setContentsMargins(300, 50, 50, 50)
-        self.menubar.setGeometry(QtCore.QRect(300, 30, 800, 400))
+
+        button_container = QtWidgets.QWidget()
+        vlay = QtWidgets.QVBoxLayout(button_container)
+        vlay.addStretch()
+        vlay.addWidget(self.pushButton)
+        vlay.addWidget(self.pushButton_2)
+        vlay.addWidget(self.comboBox)
+        vlay.addStretch()
+
 
         lay = QtWidgets.QHBoxLayout(self.centralwidget)
         lay.addWidget(self.view, stretch=1)
+        lay.addWidget(button_container)
 
-        m = folium.Map(
-            location=[39, 40], tiles="Stamen Toner", zoom_start=13
-        )
-
-        data = io.BytesIO()
-        m.save(data, close_file=False)
-        self.view.setHtml(data.getvalue().decode())
 
         #########
 
@@ -124,6 +127,13 @@ class Ui_MainWindow(object):
         self.label_13.setText(current_time)
         self.label_12.setText(current_time)
         self.label_11.setText(current_time)
+        m = folium.Map(
+            location=[39, 40], tiles="Stamen Toner", zoom_start=13
+        )
+
+        data = io.BytesIO()
+        m.save(data, close_file=False)
+        self.view.setHtml(data.getvalue().decode())
 
     def stop(self):
         try:
@@ -134,8 +144,10 @@ class Ui_MainWindow(object):
     def start(self):
         print("telemetry started")
         self.telemetry_timer.timeout.connect(self.display_telemetry_data)
-        self.telemetry_timer.setInterval(1000)  # 1000ms = 1s
+        self.telemetry_timer.setInterval(1500)  # 1000ms = 1s
         self.telemetry_timer.start()
+
+
 
 if __name__ == "__main__":
     import sys
